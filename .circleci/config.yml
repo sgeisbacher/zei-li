@@ -1,0 +1,11 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: sgeisbacher/zeili-build
+
+    working_directory: /project
+
+    steps:
+      - checkout
+      - run: ghc -o zei main.hs
