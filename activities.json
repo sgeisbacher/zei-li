@@ -1,0 +1,40 @@
+{
+    "activities": [
+        {
+            "id": "128258",
+            "name": "SSHSA",
+            "color": "#9b2bae",
+            "integration": "zei"
+        },
+        {
+            "id": "128409",
+            "name": "TMLR",
+            "color": "#374046",
+            "integration": "zei"
+        },
+        {
+            "id": "134613",
+            "name": "KB",
+            "color": "#fe9a28",
+            "integration": "zei"
+        },
+        {
+            "id": "215728",
+            "name": "sport",
+            "color": "#8cc250",
+            "integration": "zei"
+        },
+        {
+            "id": "224150",
+            "name": "training",
+            "color": "#4051b3",
+            "integration": "zei"
+        },
+        {
+            "id": "233423",
+            "name": "contributing",
+            "color": "#9e9e9e",
+            "integration": "zei"
+        }
+    ]
+}
