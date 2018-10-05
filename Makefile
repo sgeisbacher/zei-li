@@ -1,3 +1,5 @@
+VERSION=0.0.1
+
 .PHONY: clean
 clean:
 	rm -v *.o *.hi
