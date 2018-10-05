@@ -7,6 +7,7 @@ import Context
 
 commandDispatch :: [(String, Ctx -> [String] -> IO String)]  
 commandDispatch = [ ("list", list)  
+                  , ("help", printUsage)
                   ]
 
 listDispatch :: [(String, Ctx -> [String] -> IO String)]  
@@ -24,3 +25,8 @@ main = do
     let (Just action) = lookup command commandDispatch  
     result <- action ctx args
     putStr result
+
+printUsage :: Ctx -> [String] -> IO String
+printUsage _ _ = return "usage: zei <command> <args>...\n\n\
+    \examples:\n\
+    \  list activities (<prefix>) - lists all your activities. filtered by prefix (optional)\n"
