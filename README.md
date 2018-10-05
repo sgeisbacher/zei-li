@@ -6,6 +6,6 @@ all tools and scripts in this repo are released without any warranties of any ki
 any use of these scripts and tools is at your own risk.
 ## usage
 ```
-zei list activities # lists all your activities
+zei list activities (<prefix>) # lists all your activities
 ```
 
