@@ -29,4 +29,4 @@ main = do
 printUsage :: Ctx -> [String] -> IO String
 printUsage _ _ = return "usage: zei <command> <args>...\n\n\
     \examples:\n\
-    \  list activities (<prefix>) - lists all your activities. filtered by prefix (optional)\n"
+    \  list activities (<prefix>) - lists all your activities. filtered by prefix (optional)\n\n"

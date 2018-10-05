@@ -1,11 +1,32 @@
+aliases:
+  # Cache Management
+  - &restore-cabal-cache
+    keys:
+      - 1-cabal-{{ arch }}-{{ checksum "zei-li.cabal" }}
+  - &save-cabal-cache
+    paths:
+      - /root/.cabal
+    key: 1-cabal-{{ arch }}-{{ checksum "zei-li.cabal" }}
+ 
+  - &update-package-list
+    name: update-package-list
+    command: |
+      if [ ! -d /root/.cabal ]; then
+        echo "updating cabal package-list ..."
+        cabal update
+      fi
+
 version: 2
 jobs:
   build:
     docker:
-      - image: sgeisbacher/zeili-build
+      - image: haskell
 
     working_directory: /project
 
     steps:
       - checkout
-      - run: make build
+      - restore-cache: *restore-cabal-cache
+      - run: *update-package-list
+      - run: cabal new-build
+      - save_cache: *save-cabal-cache
