@@ -60,12 +60,18 @@ startsWithCaseInsensitive prefix str = startswith prefix . strToLower $ str
 extractNames :: [Activity] -> [String]
 extractNames = fmap name
 
-filterByPrefix :: String -> [String] -> [String]
-filterByPrefix prefix activities = filter (startsWithCaseInsensitive prefix) activities
+filterByPrefix :: Maybe String -> [String] -> [String]
+filterByPrefix (Nothing) activities = activities
+filterByPrefix (Just prefix) activities = filter (startsWithCaseInsensitive prefix) activities
+
+parsePrefix :: [String] -> Maybe String
+parsePrefix [] = Nothing
+parsePrefix (prefix:_) = Just prefix
 
 list :: Ctx -> [String] -> IO String
-list ctx (prefix:_) = do
+list ctx args = do
+    -- d <- (eitherDecode <$> getJSONFromFile) :: IO (Either String Activities)
     d <- (eitherDecode <$> (getJSONFromServer ctx)) :: IO (Either String Activities)
     case d of 
         Left err -> return err 
-        Right result -> return $ unlines . (filterByPrefix prefix)  . extractNames $ activities result
+        Right result -> return $ unlines . (filterByPrefix $ parsePrefix args) . extractNames $ activities result
