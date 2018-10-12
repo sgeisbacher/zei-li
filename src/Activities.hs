@@ -1,24 +1,24 @@
-{-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module Activities
 ( Activity
 , list
+, findByName
+, Activities.id
+, Activities.name
 ) where
 
 import Data.Aeson
 import Control.Applicative
 import Control.Monad
 import qualified Data.ByteString.Lazy as B
-import Network.HTTP.Simple
-import Network.HTTP.Types.Header
-import qualified Data.ByteString.Char8 as C8
-import qualified Data.CaseInsensitive as CI
 import GHC.Generics
 import Data.List
 import Data.Char
 import Data.String.Utils
 
 import Context
+import Uplink
 import qualified Constants as C
 
 newtype Activities =
@@ -38,19 +38,6 @@ data Activity =
 instance FromJSON Activity
 instance ToJSON Activity
 
-jsonFile :: FilePath
-jsonFile = "activities.json"
-  
-getJSONFromFile :: IO B.ByteString
-getJSONFromFile = B.readFile jsonFile
-
-getJSONFromServer :: Ctx -> IO B.ByteString
-getJSONFromServer ctx = do
-    req <- parseRequest C.endpointActivities
-    let reqWithAuth = addRequestHeader hAuthorization (C8.pack $ "Bearer " ++ token ctx) req
-    resp <- httpLBS reqWithAuth
-    return $ getResponseBody resp
-
 strToLower :: String -> String
 strToLower = map toLower 
 
@@ -68,10 +55,21 @@ parsePrefix :: [String] -> Maybe String
 parsePrefix [] = Nothing
 parsePrefix (prefix:_) = Just prefix
 
+is :: String -> Activity -> Bool
+is [] _ = False
+is otherName activity = Activities.name activity == otherName
+
+findByName :: Ctx -> String -> IO (Maybe Activity)
+findByName ctx name = do
+    d <- eitherDecode <$> Uplink.get (token ctx) C.endpointActivities :: IO (Either String Activities)
+    case d of 
+        Left _ -> return Nothing
+        Right result -> return $ Data.List.find (is name) $ activities result
+
+
 list :: Ctx -> [String] -> IO String
 list ctx args = do
-    -- d <- (eitherDecode <$> getJSONFromFile) :: IO (Either String Activities)
-    d <- eitherDecode <$> getJSONFromServer ctx :: IO (Either String Activities)
+    d <- eitherDecode <$> Uplink.get (token ctx) C.endpointActivities :: IO (Either String Activities)
     case d of 
         Left err -> return err 
         Right result -> return $ unlines . filterByPrefix (parsePrefix args) . extractNames $ activities result
