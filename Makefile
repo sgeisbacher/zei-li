@@ -4,6 +4,10 @@ VERSION=0.0.1
 clean:
 	rm -v *.o *.hi
 
+.PHONY: lint
+lint:
+	docker run -ti -v `pwd`:/project -w /project jamesmstone/hlint src
+
 .PHONY: build
 build:
 	ghc -o zei main.hs

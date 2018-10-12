@@ -21,7 +21,7 @@ import Data.String.Utils
 import Context
 import qualified Constants as C
 
-data Activities =
+newtype Activities =
     Activities { activities :: [Activity] } deriving (Show,Generic)
 
 instance FromJSON Activities
@@ -55,13 +55,13 @@ strToLower :: String -> String
 strToLower = map toLower 
 
 startsWithCaseInsensitive :: String -> String -> Bool
-startsWithCaseInsensitive prefix str = startswith prefix . strToLower $ str
+startsWithCaseInsensitive prefix = startswith prefix . strToLower 
 
 extractNames :: [Activity] -> [String]
 extractNames = fmap name
 
 filterByPrefix :: Maybe String -> [String] -> [String]
-filterByPrefix (Nothing) activities = activities
+filterByPrefix Nothing activities = activities
 filterByPrefix (Just prefix) activities = filter (startsWithCaseInsensitive prefix) activities
 
 parsePrefix :: [String] -> Maybe String
@@ -71,7 +71,7 @@ parsePrefix (prefix:_) = Just prefix
 list :: Ctx -> [String] -> IO String
 list ctx args = do
     -- d <- (eitherDecode <$> getJSONFromFile) :: IO (Either String Activities)
-    d <- (eitherDecode <$> (getJSONFromServer ctx)) :: IO (Either String Activities)
+    d <- eitherDecode <$> getJSONFromServer ctx :: IO (Either String Activities)
     case d of 
         Left err -> return err 
-        Right result -> return $ unlines . (filterByPrefix $ parsePrefix args) . extractNames $ activities result
+        Right result -> return $ unlines . filterByPrefix (parsePrefix args) . extractNames $ activities result

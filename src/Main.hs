@@ -2,7 +2,7 @@ import System.Environment
 import System.Directory  
 import System.IO  
 
-import qualified Activities as Activities
+import qualified Activities as A
 import Context
 
 commandDispatch :: [(String, Ctx -> [String] -> IO String)]  
@@ -11,7 +11,7 @@ commandDispatch = [ ("list", list)
                   ]
 
 listDispatch :: [(String, Ctx -> [String] -> IO String)]  
-listDispatch = [ ("activities", Activities.list)  
+listDispatch = [ ("activities", A.list)  
                ]
 
 list :: Ctx -> [String] -> IO String
