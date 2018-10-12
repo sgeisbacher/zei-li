@@ -3,10 +3,12 @@ import System.Directory
 import System.IO  
 
 import qualified Activities as A
+import qualified TimeTracking as T
 import Context
 
 commandDispatch :: [(String, Ctx -> [String] -> IO String)]  
 commandDispatch = [ ("list", list)  
+                  , ("start", T.start)
                   , ("help", printUsage)
                   ]
 
@@ -29,4 +31,5 @@ main = do
 printUsage :: Ctx -> [String] -> IO String
 printUsage _ _ = return "usage: zei <command> <args>...\n\n\
     \examples:\n\
-    \  list activities (<prefix>) - lists all your activities. filtered by prefix (optional)\n\n"
+    \  list activities (<prefix>) - lists all your activities. filtered by prefix (optional)\n\
+    \  start <activity> - start time-tracking for given activity\n\n"

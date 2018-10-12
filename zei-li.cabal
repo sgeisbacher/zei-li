@@ -20,6 +20,8 @@ executable zei
   other-modules:        Activities
                       , Constants
                       , Context
+                      , Uplink
+                      , TimeTracking
   -- other-extensions:
   build-depends:        base >=4.11 && <4.12
                       , aeson
@@ -29,5 +31,6 @@ executable zei
                       , http-types
                       , case-insensitive
                       , directory
+                      , time
   hs-source-dirs:       src
   default-language:     Haskell2010

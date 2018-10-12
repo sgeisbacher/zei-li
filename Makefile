@@ -10,4 +10,4 @@ lint:
 
 .PHONY: build
 build:
-	ghc -o zei main.hs
+	ghc -o zei src/Main.hs
