@@ -18,6 +18,15 @@ aliases:
 
 version: 2
 jobs:
+  lint:
+    docker:
+      - image: yufrice/yesod-hlint
+    
+    working_directory: /project
+
+    steps:
+      - checkout
+      - run: hlint src 
   build:
     docker:
       - image: haskell
@@ -30,3 +39,23 @@ jobs:
       - run: *update-package-list
       - run: cabal new-build
       - save_cache: *save-cabal-cache
+workflows:
+  version: 2
+  lint_build:
+    jobs:
+      - lint:
+          filters:
+            branches:
+              only:
+                - /^feature\/.*/
+                - /^hotfix\/.*/
+                - develop
+      - build:
+          requires:
+            - lint
+          filters:
+            branches:
+              only:
+                - /^feature\/.*/
+                - /^hotfix\/.*/
+                - develop

@@ -6,12 +6,12 @@ module Context
 
 import Data.String.Utils
 
-data Ctx =
+newtype Ctx =
     Ctx {
         token :: String
     } deriving (Show)
 
 createCtx :: IO Ctx
 createCtx = do
-    token <- fmap (strip . rstrip) $ readFile ".zeitoken"
+    token <- strip . rstrip <$> readFile ".zeitoken"
     return Ctx { token=token }
