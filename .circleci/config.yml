@@ -1,12 +1,19 @@
 aliases:
   # Cache Management
-  - &restore-cabal-cache
+  - &restore-cabal-build-cache
     keys:
-      - 1-cabal-{{ arch }}-{{ checksum "zei-li.cabal" }}
-  - &save-cabal-cache
+      - 1-cabal-build-{{ arch }}-{{ checksum "zei-li.cabal" }}
+  - &save-cabal-build-cache
     paths:
       - /root/.cabal
-    key: 1-cabal-{{ arch }}-{{ checksum "zei-li.cabal" }}
+    key: 1-cabal-build-{{ arch }}-{{ checksum "zei-li.cabal" }}
+  - &restore-cabal-test-cache
+    keys:
+      - 1-cabal-test-{{ arch }}-{{ checksum "zei-li.cabal" }}
+  - &save-cabal-test-cache
+    paths:
+      - /root/.cabal
+    key: 1-cabal-test-{{ arch }}-{{ checksum "zei-li.cabal" }}
  
   - &update-package-list
     name: update-package-list
@@ -35,13 +42,25 @@ jobs:
 
     steps:
       - checkout
-      - restore-cache: *restore-cabal-cache
+      - restore-cache: *restore-cabal-build-cache
       - run: *update-package-list
       - run: cabal new-build
-      - save_cache: *save-cabal-cache
+      - save_cache: *save-cabal-build-cache
+  test:
+    docker:
+      - image: haskell
+
+    working_directory: /project
+
+    steps:
+      - checkout
+      - restore-cache: *restore-cabal-test-cache
+      - run: *update-package-list
+      - run: cabal new-test
+      - save_cache: *save-cabal-test-cache
 workflows:
   version: 2
-  lint_build:
+  lint_build_test:
     jobs:
       - lint:
           filters:
@@ -53,6 +72,15 @@ workflows:
       - build:
           requires:
             - lint
+          filters:
+            branches:
+              only:
+                - /^feature\/.*/
+                - /^hotfix\/.*/
+                - develop
+      - test:
+          requires:
+            - build
           filters:
             branches:
               only:

@@ -15,6 +15,28 @@ build-type:          Simple
 extra-source-files:  ChangeLog.md, README.md
 cabal-version:       >=1.10
 
+test-suite unit-tests
+  type:           exitcode-stdio-1.0
+  main-is:        Main.hs 
+  hs-source-dirs: tests src
+  other-modules:        Activities
+                      , Constants
+                      , Context
+                      , Uplink
+                      , TimeTracking
+  build-depends:        base >=4.11 && <4.12
+                      , aeson
+                      , bytestring
+                      , MissingH
+                      , http-conduit
+                      , http-types
+                      , case-insensitive
+                      , directory
+                      , time
+                      , hspec
+                      , tasty
+                      , tasty-hspec
+
 executable zei
   main-is:             Main.hs
   other-modules:        Activities
