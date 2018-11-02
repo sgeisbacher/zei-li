@@ -4,16 +4,13 @@ where
 import Test.Tasty
 import Test.Tasty.Hspec
 
+import TimeTrackingSpec
+
 main :: IO ()
 main = do
-    simpleTestSpec <- testSpec "SimpleTest" simpleTest
+    timeExprToSecSpec <- testSpec "timeExprToSec()" testTimeExprToSec
+    getOptionSpec <- testSpec "getOption()" testGetOption
+    calculateStartSpec <- testSpec "calculateStart()" testCalculateStart
     defaultMain (testGroup "tests" [
-            testGroup "SimpleTests" [simpleTestSpec] 
+            testGroup "TimeTracking" [timeExprToSecSpec, getOptionSpec, calculateStartSpec] 
         ])
-
-simpleTest :: Spec
-simpleTest = do
-    it "1 == 1" $
-        1 `shouldBe` 1
-    it "1 == 1" $
-        1 `shouldBe` 1
