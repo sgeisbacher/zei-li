@@ -20,7 +20,6 @@ test-suite unit-tests
   main-is:        Main.hs 
   hs-source-dirs: tests src
   other-modules:        Activities
-                      , Constants
                       , Context
                       , Uplink
                       , TimeTracking
@@ -42,7 +41,6 @@ test-suite unit-tests
 executable zei
   main-is:             Main.hs
   other-modules:        Activities
-                      , Constants
                       , Context
                       , Uplink
                       , TimeTracking
