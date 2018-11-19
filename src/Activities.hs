@@ -19,7 +19,6 @@ import Data.String.Utils
 
 import Context
 import Uplink
-import qualified Constants as C
 
 newtype Activities =
     Activities { activities :: [Activity] } deriving (Show,Generic)
@@ -61,7 +60,7 @@ is otherName activity = Activities.name activity == otherName
 
 findByName :: Ctx -> String -> IO (Maybe Activity)
 findByName ctx name = do
-    d <- eitherDecode <$> Uplink.get (token ctx) C.endpointActivities :: IO (Either String Activities)
+    d <- eitherDecode <$> Uplink.get ctx (endpointActivities ctx) :: IO (Either String Activities)
     case d of 
         Left _ -> return Nothing
         Right result -> return $ Data.List.find (is name) $ activities result
@@ -69,7 +68,7 @@ findByName ctx name = do
 
 list :: Ctx -> [String] -> IO String
 list ctx args = do
-    d <- eitherDecode <$> Uplink.get (token ctx) C.endpointActivities :: IO (Either String Activities)
+    d <- eitherDecode <$> Uplink.get ctx (endpointActivities ctx) :: IO (Either String Activities)
     case d of 
         Left err -> return err 
         Right result -> return $ unlines . filterByPrefix (parsePrefix args) . extractNames $ activities result

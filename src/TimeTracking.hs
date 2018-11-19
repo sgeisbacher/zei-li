@@ -8,7 +8,6 @@ module TimeTracking
 
 import Data.Aeson
 import Context
-import qualified Constants as C
 import Uplink
 import Data.Time.Clock 
 import Data.Time.Format
@@ -19,8 +18,6 @@ import Text.Regex.Posix
 import Data.Maybe (fromMaybe)
 
 import qualified Activities
-
--- (([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?
 
 newtype TrackingStart = TrackingStart String
 instance ToJSON TrackingStart where
@@ -58,9 +55,9 @@ start ctx (activityName:args) = do
     case act of 
         Nothing -> return "Error while starting activity (not found)"
         Just activity -> do
-            let endpoint = replace "{activityId}" (Activities.id activity) C.endpointTimeTrackingStart
+            let endpoint = replace "{activityId}" (Activities.id activity) (endpointTimeTrackingStart ctx)
             currTime <- getCurrentTime
             let trackingStart = TrackingStart <$> calculateStart currTime $ timeExprToSec . fromMaybe "0s" $ getOption "offset" args 
-            answer <- C8.unpack <$> Uplink.post (token ctx) endpoint trackingStart
+            answer <- C8.unpack <$> Uplink.post ctx endpoint trackingStart
             putStrLn $ "answer: " ++ answer 
             return $ "started " ++ Activities.name activity

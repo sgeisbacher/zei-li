@@ -15,22 +15,24 @@ import qualified Data.CaseInsensitive as CI
 import qualified Data.ByteString.Lazy as B
 import Data.List.Utils
 
-withAuth :: String -> Request -> Request 
-withAuth token = addRequestHeader hAuthorization (C8.pack $ "Bearer " ++ token)
+import Context
+
+withAuth :: Ctx -> Request -> Request 
+withAuth ctx = addRequestHeader hAuthorization (C8.pack $ "Bearer " ++ token ctx)
 
 withReqBody :: ToJSON a => a -> Request -> Request 
 withReqBody = setRequestBodyJSON
 
-get :: String -> String -> IO B.ByteString
-get token endpoint = do
+get :: Ctx -> String -> IO B.ByteString
+get ctx endpoint = do
     req <- parseRequest endpoint
-    resp <- httpLBS $ withAuth token req
+    resp <- httpLBSFunc ctx $ withAuth ctx req
     return $ getResponseBody resp
 
-post :: ToJSON a => String -> String -> a -> IO B.ByteString
-post token endpoint body = do
+post :: ToJSON a => Ctx -> String -> a -> IO B.ByteString
+post ctx endpoint body = do
     req <- parseRequest endpoint
     let postReq = req { method = "POST" }
     let postReqWithContentType = addRequestHeader hContentType (C8.pack "application/json") postReq
-    resp <- httpLBS $ withAuth token . withReqBody body $ postReqWithContentType
+    resp <- httpLBSFunc ctx $ withAuth ctx . withReqBody body $ postReqWithContentType
     return $ getResponseBody resp

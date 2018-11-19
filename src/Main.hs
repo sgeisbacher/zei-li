@@ -22,11 +22,16 @@ list ctx (entity:args) = case lookup entity listDispatch of
                         Just action -> action ctx args
 
 main = do 
-    ctx <- createCtx
-    (command:args) <- getArgs  
-    let (Just action) = lookup command commandDispatch  
-    result <- action ctx args
+    ctx <- createCtx []
+    args <- getArgs  
+    result <- run ctx args
     putStr result
+
+run :: Ctx -> [String] -> IO String
+run ctx (command:args) = do
+    let (Just action) = lookup command commandDispatch  
+    action ctx args
+    
 
 printUsage :: Ctx -> [String] -> IO String
 printUsage _ _ = return "usage: zei <command> <args>...\n\n\
