@@ -56,7 +56,19 @@ jobs:
       - checkout
       - restore-cache: *restore-cabal-test-cache
       - run: *update-package-list
-      - run: cabal new-test
+      - run: cabal new-test unit-tests
+      - save_cache: *save-cabal-test-cache
+  integ-test:
+    docker:
+      - image: haskell
+
+    working_directory: /project
+
+    steps:
+      - checkout
+      - restore-cache: *restore-cabal-test-cache
+      - run: *update-package-list
+      - run: cabal new-test integ-tests
       - save_cache: *save-cabal-test-cache
 workflows:
   version: 2
@@ -81,6 +93,15 @@ workflows:
       - test:
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - /^feature\/.*/
+                - /^hotfix\/.*/
+                - develop
+      - integ-test:
+          requires:
+            - test
           filters:
             branches:
               only:

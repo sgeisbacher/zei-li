@@ -1,0 +1,18 @@
+{
+    "activities": [
+        {
+            "color": "#9b2bae",
+            "deviceSide": null,
+            "id": "17",
+            "integration": "zei",
+            "name": "phone-calls"
+        },
+        {
+            "color": "#374046",
+            "deviceSide": null,
+            "id": "18",
+            "integration": "zei",
+            "name": "emailing"
+        }
+    ]
+}
