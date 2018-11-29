@@ -1,40 +1,49 @@
+{-# LANGUAGE FlexibleContexts #-}
 import System.Environment   
 import System.Directory  
 import System.IO  
 
-import qualified Activities as A
-import qualified TimeTracking as T
+-- import qualified Activities as A
+-- import qualified TimeTracking as T
+import Control.Monad.Reader
 import Context
 
-commandDispatch :: [(String, Ctx -> [String] -> IO String)]  
-commandDispatch = [ ("list", list)  
-                  , ("start", T.start)
-                  , ("help", printUsage)
+commandDispatch :: (MonadReader Ctx m, MonadIO m) => [(String, [String] -> m String)]
+commandDispatch = [
+    --  ("list", list)  
+                --   , ("start", T.start)
+                   ("help", printUsage)
                   ]
 
-listDispatch :: [(String, Ctx -> [String] -> IO String)]  
-listDispatch = [ ("activities", A.list)  
+listDispatch :: (MonadReader Ctx m, MonadIO m) => [(String, [String] -> m String)]
+listDispatch = [ 
+    -- ("activities", A.list)  
                ]
 
-list :: Ctx -> [String] -> IO String
-list ctx (entity:args) = case lookup entity listDispatch of
+list :: (MonadReader Ctx m, MonadIO m) => [String] -> m String
+list (entity:args) = case lookup entity listDispatch of
                         Nothing -> return $ "error: could not list unkown entity: " ++ entity
-                        Just action -> action ctx args
+                        Just action -> action args
 
 main = do 
     ctx <- createCtx []
     args <- getArgs  
-    result <- run ctx args
-    putStr result
+    putStr "asdf"
+    -- result <- runReader (run args) ctx
+    -- putStr result
 
-run :: Ctx -> [String] -> IO String
-run ctx (command:args) = do
+run :: (MonadReader Ctx m, MonadIO m) => [String] -> m String
+run (command:args) = do
     let (Just action) = lookup command commandDispatch  
-    action ctx args
+    action args
     
 
-printUsage :: Ctx -> [String] -> IO String
-printUsage _ _ = return "usage: zei <command> <args>...\n\n\
-    \examples:\n\
-    \  list activities (<prefix>) - lists all your activities. filtered by prefix (optional)\n\
-    \  start <activity> - start time-tracking for given activity\n\n"
+printUsage :: (MonadReader Ctx m, MonadIO m) => [String] -> m String
+printUsage _ = liftIO $ toIO "usage: zei <command> <args>...\n\n"
+    -- \examples:\n\
+    -- \  list activities (<prefix>) - lists all your activities. filtered by prefix (optional)\n\
+    -- \  start <activity> - start time-tracking for given activity\n\n"
+
+toIO :: String -> IO String
+toIO str = do
+    return str

@@ -1,9 +1,9 @@
 {-# LANGUAGE DeriveGeneric #-}
-
+{-# LANGUAGE FlexibleContexts #-}
 module Activities
 ( Activity
 , list
-, findByName
+-- , findByName
 , Activities.id
 , Activities.name
 ) where
@@ -13,6 +13,7 @@ import Control.Applicative
 import Control.Monad
 import qualified Data.ByteString.Lazy as B
 import GHC.Generics
+import Control.Monad.Reader
 import Data.List
 import Data.Char
 import Data.String.Utils
@@ -58,17 +59,22 @@ is :: String -> Activity -> Bool
 is [] _ = False
 is otherName activity = Activities.name activity == otherName
 
-findByName :: Ctx -> String -> IO (Maybe Activity)
-findByName ctx name = do
-    d <- eitherDecode <$> Uplink.get ctx (endpointActivities ctx) :: IO (Either String Activities)
-    case d of 
-        Left _ -> return Nothing
-        Right result -> return $ Data.List.find (is name) $ activities result
+-- findByName :: MonadReader Ctx m -> String -> m (IO (Maybe Activity))
+-- findByName ctx name = do
+--     d <- eitherDecode <$> Uplink.get ctx (endpointActivities ctx) :: IO (Either String Activities)
+--     case d of 
+--         Left _ -> return Nothing
+--         Right result -> return $ Data.List.find (is name) $ activities result
 
 
-list :: Ctx -> [String] -> IO String
-list ctx args = do
+list :: (MonadReader Ctx m, MonadIO m)  => [String] -> m String
+list args = do
+    ctx <- ask
     d <- eitherDecode <$> Uplink.get ctx (endpointActivities ctx) :: IO (Either String Activities)
     case d of 
-        Left err -> return err 
-        Right result -> return $ unlines . filterByPrefix (parsePrefix args) . extractNames $ activities result
+        Left err -> return $ toIO err 
+        Right result -> return $ toIO . unlines . filterByPrefix (parsePrefix args) . extractNames $ activities result
+
+toIO :: String -> IO String
+toIO str = do
+    return str

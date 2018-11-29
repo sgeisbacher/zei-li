@@ -13,6 +13,7 @@ import Data.Time.Clock
 import Data.Time.Format
 import qualified Data.ByteString.Lazy.Char8 as C8
 import qualified Data.ByteString.Lazy as B
+import Control.Monad.Reader
 import Data.List.Utils
 import Text.Regex.Posix
 import Data.Maybe (fromMaybe)
@@ -48,7 +49,7 @@ calculateStart currTime offset = do
     let timeStamp = addUTCTime (realToFrac $ (-1) * offset) currTime
     take 23 . formatTime defaultTimeLocale "%Y-%m-%dT%H:%M:%S.%q" $ timeStamp
 
-start :: Ctx -> [String] -> IO String
+start :: MonadReader Ctx m => [String] -> m (IO String)
 start _ [] = return "activity required!"
 start ctx (activityName:args) = do
     act <- Activities.findByName ctx activityName
