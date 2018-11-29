@@ -6,18 +6,16 @@ module TimeTracking
 , calculateStart
 ) where
 
-import Data.Aeson
-import Context
-import Uplink
-import Data.Time.Clock 
-import Data.Time.Format
-import qualified Data.ByteString.Lazy.Char8 as C8
-import qualified Data.ByteString.Lazy as B
-import Data.List.Utils
-import Text.Regex.Posix
+import Data.Aeson (ToJSON, toJSON, object, (.=))
+import Data.Time.Clock (UTCTime, addUTCTime, getCurrentTime)
+import Data.Time.Format (formatTime, defaultTimeLocale)
+import Data.List.Utils (replace)
+import Text.Regex.Posix (getAllTextSubmatches, (=~))
 import Data.Maybe (fromMaybe)
 
 import qualified Activities
+import Context
+import Uplink
 
 newtype TrackingStart = TrackingStart String
 instance ToJSON TrackingStart where
@@ -53,11 +51,12 @@ start _ [] = return "activity required!"
 start ctx (activityName:args) = do
     act <- Activities.findByName ctx activityName
     case act of 
-        Nothing -> return "Error while starting activity (not found)"
+        Nothing -> return $ "Error while starting activity: '" ++ activityName ++ "' not found"
         Just activity -> do
             let endpoint = replace "{activityId}" (Activities.id activity) (endpointTimeTrackingStart ctx)
             currTime <- getCurrentTime
             let trackingStart = TrackingStart <$> calculateStart currTime $ timeExprToSec . fromMaybe "0s" $ getOption "offset" args 
-            answer <- C8.unpack <$> Uplink.post ctx endpoint trackingStart
-            putStrLn $ "answer: " ++ answer 
-            return $ "started " ++ Activities.name activity
+            resp <- Uplink.post ctx endpoint trackingStart
+            case resp of
+                Nothing -> return $ "could not start " ++ activityName
+                Just respBody -> return $ "started " ++ Activities.name activity

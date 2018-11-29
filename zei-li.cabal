@@ -47,6 +47,7 @@ test-suite integ-tests
   other-modules:        Activities
                       , Context
                       , Uplink
+                      , TimeTracking
   build-depends:        base >=4.11 && <4.12
                       , aeson
                       , bytestring

@@ -1,0 +1,17 @@
+{
+    "currentTracking": {
+        "activity": {
+            "color": "#374046",
+            "id": "18",
+            "integration": "zei",
+            "name": "emailing"
+        },
+        "note": {
+            "mentions": [],
+            "tags": [],
+            "text": null
+        },
+        "startedAt": "2018-11-29T18:02:00.678"
+    },
+    "errors": []
+}

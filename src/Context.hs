@@ -7,9 +7,8 @@ module Context
 , endpointTimeTrackingStart
 ) where
 
-import Data.String.Utils
-import Network.HTTP.Simple
-import Control.Monad.IO.Class
+import Data.String.Utils (strip, rstrip)
+import Network.HTTP.Simple (Request, Response, httpLBS)
 import qualified Data.ByteString.Lazy as B
 
 data Ctx =
