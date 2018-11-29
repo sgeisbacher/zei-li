@@ -5,15 +5,13 @@ module Uplink
 , post
 ) where
 
-import Data.Aeson
-import Network.HTTP.Simple
-import Network.HTTP.Conduit
-import Network.HTTP.Types.Header
+import Data.Aeson (ToJSON)
+import Network.HTTP.Simple (Request, addRequestHeader, getResponseBody, setRequestBodyJSON, parseRequest)
+import Network.HTTP.Conduit (method, responseStatus)
+import Network.HTTP.Types.Header (hAuthorization, hContentType)
+import Network.HTTP.Types.Status (statusCode)
 import qualified Data.ByteString.Char8 as C8
-import qualified Data.ByteString.Lazy.Char8 as C8L
-import qualified Data.CaseInsensitive as CI
 import qualified Data.ByteString.Lazy as B
-import Data.List.Utils
 
 import Context
 
@@ -29,10 +27,13 @@ get ctx endpoint = do
     resp <- httpLBSFunc ctx $ withAuth ctx req
     return $ getResponseBody resp
 
-post :: ToJSON a => Ctx -> String -> a -> IO B.ByteString
+post :: ToJSON a => Ctx -> String -> a -> IO (Maybe B.ByteString)
 post ctx endpoint body = do
     req <- parseRequest endpoint
     let postReq = req { method = "POST" }
     let postReqWithContentType = addRequestHeader hContentType (C8.pack "application/json") postReq
     resp <- httpLBSFunc ctx $ withAuth ctx . withReqBody body $ postReqWithContentType
-    return $ getResponseBody resp
+    let respStatusCode = statusCode . responseStatus $ resp
+    case respStatusCode of 
+        200 -> return $ Just (getResponseBody resp)
+        _ -> return Nothing

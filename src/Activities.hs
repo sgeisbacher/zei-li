@@ -8,20 +8,17 @@ module Activities
 , Activities.name
 ) where
 
-import Data.Aeson
-import Control.Applicative
-import Control.Monad
-import qualified Data.ByteString.Lazy as B
-import GHC.Generics
-import Data.List
-import Data.Char
-import Data.String.Utils
+import Data.Aeson (FromJSON, ToJSON, eitherDecode)
+import GHC.Generics (Generic)
+import Data.List (find)
+import Data.Char (toLower)
+import Data.String.Utils (startswith)
 
 import Context
 import Uplink
 
 newtype Activities =
-    Activities { activities :: [Activity] } deriving (Show,Generic)
+    Activities { activities :: [Activity] } deriving (Show, Generic)
 
 instance FromJSON Activities
 instance ToJSON Activities
@@ -32,7 +29,7 @@ data Activity =
         , name        :: !String
         , color       :: !String
         , integration :: !String
-        } deriving (Show,Generic)
+        } deriving (Show, Generic)
 
 instance FromJSON Activity
 instance ToJSON Activity
@@ -63,8 +60,7 @@ findByName ctx name = do
     d <- eitherDecode <$> Uplink.get ctx (endpointActivities ctx) :: IO (Either String Activities)
     case d of 
         Left _ -> return Nothing
-        Right result -> return $ Data.List.find (is name) $ activities result
-
+        Right result -> return $ find (is name) $ activities result
 
 list :: Ctx -> [String] -> IO String
 list ctx args = do
