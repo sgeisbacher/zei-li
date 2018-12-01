@@ -15,6 +15,7 @@ listDispatch = [ ("activities", A.list)
                ]
 
 list :: Ctx -> [String] -> IO String
+list ctx [] = return "missing entity in list command"
 list ctx (entity:args) = case lookup entity listDispatch of
                         Nothing -> return $ "error: could not list unkown entity: " ++ entity
                         Just action -> action ctx args
@@ -26,10 +27,10 @@ main = do
     putStr result
 
 run :: Ctx -> [String] -> IO String
+run ctx [] = run ctx ["help"]
 run ctx (command:args) = do
     let (Just action) = lookup command commandDispatch  
     action ctx args
-    
 
 printUsage :: Ctx -> [String] -> IO String
 printUsage _ _ = return "usage: zei <command> <args>...\n\n\
