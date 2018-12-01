@@ -48,7 +48,7 @@ test-suite integ-tests
                       , Context
                       , Uplink
                       , TimeTracking
-  build-depends:        base >=4.11 && <4.12
+  build-depends:        base >=4.11 && <=4.12
                       , aeson
                       , bytestring
                       , MissingH
