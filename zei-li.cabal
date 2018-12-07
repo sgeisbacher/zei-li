@@ -48,6 +48,7 @@ test-suite integ-tests
                       , Context
                       , Uplink
                       , TimeTracking
+                      , Mocks
   build-depends:        base >=4.12 && <4.13
                       , aeson
                       , bytestring
