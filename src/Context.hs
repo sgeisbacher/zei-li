@@ -3,6 +3,7 @@ module Context
 , createCtx
 , token
 , httpLBSFunc
+, getCurrentTimeFunc
 , endpointActivities
 , endpointTimeTrackingStart
 ) where
@@ -11,6 +12,7 @@ import System.Directory (getHomeDirectory)
 import System.IO.Error (catchIOError, ioError, userError)
 import Data.String.Utils (strip, rstrip)
 import Network.HTTP.Simple (Request, Response, httpLBS)
+import Data.Time.Clock (UTCTime, getCurrentTime)
 import qualified Data.ByteString.Lazy as B
 
 data Ctx =
@@ -18,7 +20,8 @@ data Ctx =
         token :: String,
         endpointActivities :: String,
         endpointTimeTrackingStart :: String,
-        httpLBSFunc :: Request -> IO (Response B.ByteString)  
+        httpLBSFunc :: Request -> IO (Response B.ByteString),
+        getCurrentTimeFunc :: IO UTCTime
     } 
 
 loadToken :: [String] -> IO String
@@ -34,6 +37,7 @@ createCtx options = do
         token = token,
         endpointActivities = "https://api.timeular.com/api/v2/activities",
         endpointTimeTrackingStart = "https://api.timeular.com/api/v2/tracking/{activityId}/start",
-        httpLBSFunc = httpLBS
+        httpLBSFunc = httpLBS,
+        getCurrentTimeFunc = getCurrentTime
     }
     return $ foldl (\ctx f -> f ctx) base options

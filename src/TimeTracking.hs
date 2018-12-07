@@ -7,7 +7,7 @@ module TimeTracking
 ) where
 
 import Data.Aeson (ToJSON, toJSON, object, (.=))
-import Data.Time.Clock (UTCTime, addUTCTime, getCurrentTime)
+import Data.Time.Clock (UTCTime, addUTCTime)
 import Data.Time.Format (formatTime, defaultTimeLocale)
 import Data.List.Utils (replace)
 import Text.Regex.Posix (getAllTextSubmatches, (=~))
@@ -54,7 +54,7 @@ start ctx (activityName:args) = do
         Nothing -> return $ "Error while starting activity: '" ++ activityName ++ "' not found"
         Just activity -> do
             let endpoint = replace "{activityId}" (Activities.id activity) (endpointTimeTrackingStart ctx)
-            currTime <- getCurrentTime
+            currTime <- getCurrentTimeFunc ctx
             let trackingStart = TrackingStart <$> calculateStart currTime $ timeExprToSec . fromMaybe "0s" $ getOption "offset" args 
             resp <- Uplink.post ctx endpoint trackingStart
             case resp of
