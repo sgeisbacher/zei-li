@@ -24,7 +24,7 @@ test-suite unit-tests
                       , TimeTracking
                       , TimeTrackingSpec
                       , Uplink
-  build-depends:        base >=4.11 && <4.12
+  build-depends:        base >=4.12 && <4.13
                       , aeson
                       , bytestring
                       , MissingH
@@ -48,7 +48,7 @@ test-suite integ-tests
                       , Context
                       , Uplink
                       , TimeTracking
-  build-depends:        base >=4.11 && <=4.12
+  build-depends:        base >=4.12 && <4.13
                       , aeson
                       , bytestring
                       , MissingH
@@ -71,7 +71,7 @@ executable zei
                       , Uplink
                       , TimeTracking
   -- other-extensions:
-  build-depends:        base >=4.11 && <4.12
+  build-depends:        base >=4.12 && <4.13
                       , aeson
                       , bytestring
                       , MissingH
